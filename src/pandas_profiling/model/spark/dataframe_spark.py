@@ -40,4 +40,18 @@ def spark_preprocess(config: Settings, df: DataFrame) -> DataFrame:
     #
     # # Ensure that columns are strings
     # df.columns = df.columns.astype("str")
-    return df
+
+    def _check_column_map_type(df: DataFrame, column_name: str) -> bool:
+        return str(df.select(column_name).schema[0].dataType).startswith("MapType")
+
+    columns_to_remove = list(
+        filter(lambda x: _check_column_map_type(df, x), df.columns)
+    )
+    columns_to_keep = list(
+        filter(lambda x: not _check_column_map_type(df, x), df.columns)
+    )
+
+    warnings.warn(
+        f"spark-profiling does not handle MapTypes. Column(s) { ','.join(columns_to_remove) } will be ignored."
+    )
+    return df.select(*columns_to_keep)
