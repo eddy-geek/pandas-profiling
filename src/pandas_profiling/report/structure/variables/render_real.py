@@ -196,25 +196,12 @@ def render_real(config: Settings, summary: dict) -> dict:
             "value": fmt_numeric(summary["cv"], precision=config.report.precision),
         },
         {
-            "name": "Kurtosis",
-            "value": fmt_numeric(
-                summary["kurtosis"], precision=config.report.precision
-            ),
-        },
-        {
             "name": "Mean",
             "value": fmt_numeric(summary["mean"], precision=config.report.precision),
         },
         {
             "name": "Median Absolute Deviation (MAD)",
             "value": fmt_numeric(summary["mad"], precision=config.report.precision),
-        },
-        {
-            "name": "Skewness",
-            "value": fmt_numeric(
-                summary["skewness"], precision=config.report.precision
-            ),
-            "class": "alert" if "skewness" in summary["alert_fields"] else "",
         },
         {
             "name": "Sum",
@@ -227,6 +214,27 @@ def render_real(config: Settings, summary: dict) -> dict:
             ),
         },
     ]
+
+    if summary["kurtosis"] is not None:
+        stats.append(
+            {
+                "name": "Kurtosis",
+                "value": fmt_numeric(
+                    summary["kurtosis"], precision=config.report.precision
+                ),
+            },
+        )
+
+    if summary["skewness"] is not None:
+        stats.append(
+            {
+                "name": "Skewness",
+                "value": fmt_numeric(
+                    summary["skewness"], precision=config.report.precision
+                ),
+                "class": "alert" if "skewness" in summary["alert_fields"] else "",
+            },
+        )
 
     if summary["monotonic"] is not None:
         stats.append(
